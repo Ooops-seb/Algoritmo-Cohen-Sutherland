@@ -7,10 +7,10 @@ const int RIGHT = 2;  // 0010
 const int BOTTOM = 4; // 0100
 const int TOP = 8;    // 1000
 
-const int x_max = 10;
+const int x_max = 5;
 const int y_max = 8;
-const int x_min = 4;
-const int y_min = 4;
+const int x_min = -4;
+const int y_min = -4;
 
 int computeCode(double x, double y)
 {
@@ -121,6 +121,7 @@ void cohenSutherlandClip(double x1, double y1, double x2, double y2)
         double vy1 = y_min + (y2 - y_min) * sy;
 
         glColor3f(1.0, 0.0, 0.0);
+        glLineWidth(3);
         glBegin(GL_LINES);
         glVertex2f(vx0, vy0);
         glVertex2f(vx1, vy1);
@@ -132,7 +133,7 @@ void display()
 {
     //dibujar rectangulo
     glClear(GL_COLOR_BUFFER_BIT);
-    glColor3f(1.0, 1.0, 1.0);
+    glColor3f(1.0, 0.0, 0.0);
     glBegin(GL_LINE_LOOP);
     glVertex2f(x_min, y_min);
     glVertex2f(x_max, y_min);
@@ -141,7 +142,7 @@ void display()
     glEnd();
 
     //Dibujar ejes
-    glColor3f(0.0, 0.0, 1.0);
+    glColor3f(211.0, 211.0, 211.0);
     glBegin(GL_LINES);
     glVertex2f(-20.0, 0.0);
     glVertex2f(20.0, 0.0);
@@ -149,11 +150,24 @@ void display()
     glVertex2f(0.0, 20.0);
     glEnd();
 
-    //
-    cohenSutherlandClip(-20, -10, 20, 10);
-    cohenSutherlandClip(-20, 10, 20, -10);
-    cohenSutherlandClip(-10, -20, 10, 20);
-    cohenSutherlandClip(10, -20, -10, 20);
+    //Aplicar algoritmo
+    cohenSutherlandClip(-15, -5, 15, 5);
+    cohenSutherlandClip(-15, 5, 15, -5);
+    cohenSutherlandClip(-5, -15, 5, 15);
+    cohenSutherlandClip(5, -15, -5, 15);
+
+    glColor3f(0.0, 0.0, 1.0);
+    glLineWidth(1);
+    glBegin(GL_LINES);
+    glVertex2f(-15, -5);
+    glVertex2f(15, 5);
+    glVertex2f(-15, 5);
+    glVertex2f(15, -5);
+    glVertex2f(-5, -15);
+    glVertex2f(5, 15);
+    glVertex2f(5, -15);
+    glVertex2f(-5, 15);
+    glEnd();
 
     glFlush();
 }
