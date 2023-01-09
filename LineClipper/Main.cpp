@@ -16,88 +16,86 @@ int computeCode(double x, double y)
 {
     int code = INSIDE;
 
-    if (x < x_min)       // to the left of rectangle
+    if (x < x_min)       // a la izquiera del rectangulo
         code |= LEFT;
-    else if (x > x_max)  // to the right of rectangle
+    else if (x > x_max)  // a la derecha del rectangulo
         code |= RIGHT;
-    if (y < y_min)       // below the rectangle
+    if (y < y_min)       // debajo del rectangulo
         code |= BOTTOM;
-    else if (y > y_max)  // above the rectangle
+    else if (y > y_max)  // encima del rectangulo
         code |= TOP;
 
     return code;
 }
 
-// Implementing Cohen-Sutherland algorithm
-// Clipping a line from P1 = (x2, y2) to P2 = (x2, y2)
+// Implementación del algoritmo de Cohen-Sutherland
+// Recorte de una línea de P1 = (x2, y2) a P2 = (x2, y2)
 void cohenSutherlandClip(double x1, double y1, double x2, double y2)
 {
-    // Compute region codes for P1, P2
+    // Calcular los códigos de región para P1, P2
     int code1 = computeCode(x1, y1);
     int code2 = computeCode(x2, y2);
 
-    // Initialize line as outside the rectangular window
+    // Inicializar la línea como fuera de la ventana rectangular
     bool accept = false;
 
     while (true)
     {
         if ((code1 == 0) && (code2 == 0))
         {
-            // If both endpoints lie within rectangle
+            // Si ambos extremos se encuentran dentro del rectángulo
             accept = true;
             break;
         }
         else if (code1 & code2)
         {
-            // If both endpoints are outside rectangle,
-            // in same region
+            // Si ambos extremos están fuera del rectángulo,
+            // en la misma región
             break;
         }
         else
         {
-            // Some segment of line lies within the
-            // rectangle
+            // Algún segmento de línea se encuentra dentro del rectángulo
             int code_out;
             double x, y;
 
-            // At least one endpoint is outside the
-            // rectangle, pick it.
+            // Al menos un extremo está fuera del rectángulo
             if (code1 != 0)
                 code_out = code1;
             else
                 code_out = code2;
 
-            // Find intersection point;
-            // using formulas y = y1 + slope * (x - x1),
-            // x = x1 + (1 / slope) * (y - y1)
+            // Encuentra el punto de intersección;
+            // usando fórmulas y = y1 + pendiente * (x - x1),
+            // x = x1 + (1 / pendiente) * (y - y1)
             if (code_out & TOP)
             {
-                // point is above the clip rectangle
+                // esta por encima del rectangulo
                 x = x1 + (x2 - x1) * (y_max - y1) / (y2 - y1);
                 y = y_max;
             }
             else if (code_out & BOTTOM)
             {
-                // point is below the rectangle
+                // está por debajo del rectángulo
                 x = x1 + (x2 - x1) * (y_min - y1) / (y2 - y1);
                 y = y_min;
             }
             else if (code_out & RIGHT)
             {
-                // point is to the right of rectangle
+                // el punto esta a la derecha del rectangulo
                 y = y1 + (y2 - y1) * (x_max - x1) / (x2 - x1);
                 x = x_max;
             }
             else if (code_out & LEFT)
             {
-                // point is to the left of rectangle
+                // el punto está a la izquierda del rectángulo
                 y = y1 + (y2 - y1) * (x_min - x1) / (x2 - x1);
                 x = x_min;
             }
 
-            // Now intersection point x,y is found
-            // We replace point outside rectangle
-            // by intersection point
+            // Ahora se encuentra el punto de intersección x,y
+            // Reemplazamos el punto fuera del rectángulo
+            // por el punto de intersección
             if (code_out == code1)
             {
                 x1 = x;
@@ -132,6 +130,7 @@ void cohenSutherlandClip(double x1, double y1, double x2, double y2)
 
 void display()
 {
+    //dibujar rectangulo
     glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_LINE_LOOP);
@@ -141,6 +140,7 @@ void display()
     glVertex2f(x_min, y_max);
     glEnd();
 
+    //Dibujar ejes
     glColor3f(0.0, 0.0, 1.0);
     glBegin(GL_LINES);
     glVertex2f(-20.0, 0.0);
@@ -149,6 +149,7 @@ void display()
     glVertex2f(0.0, 20.0);
     glEnd();
 
+    //
     cohenSutherlandClip(-20, -10, 20, 10);
     cohenSutherlandClip(-20, 10, 20, -10);
     cohenSutherlandClip(-10, -20, 10, 20);
@@ -177,7 +178,7 @@ int main(int argc, char** argv)
     glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
     glutInitWindowSize(windowSizeX, windowSizeY);
     glutInitWindowPosition(windowPosX, windowPosY);
-    glutCreateWindow("Cohen-Sutherland Line Clipping Algorithm");
+    glutCreateWindow("Algoritmo de recorte de linea de Cohen–Sutherland");
     gluOrtho2D(-20, 20, -20, 20);
     glutDisplayFunc(display);
     glutMainLoop();
