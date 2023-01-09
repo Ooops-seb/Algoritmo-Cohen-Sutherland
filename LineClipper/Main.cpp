@@ -7,10 +7,10 @@ const int RIGHT = 2;  // 0010
 const int BOTTOM = 4; // 0100
 const int TOP = 8;    // 1000
 
-const int x_max = 10;
-const int y_max = 8;
-const int x_min = 4;
-const int y_min = 4;
+int x_max = 10;
+int y_max = 15;
+int x_min = -10;
+int y_min = -5;
 
 int computeCode(double x, double y)
 {
@@ -122,7 +122,16 @@ void cohenSutherlandClip(double x1, double y1, double x2, double y2)
         double vx1 = x_min + (x2 - x_min) * sx;
         double vy1 = y_min + (y2 - y_min) * sy;
 
+        // Draw the original line in blue
+        glColor3f(0.0, 0.0, 1.0);
+        glBegin(GL_LINES);
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y2);
+        glEnd();
+
+        // Draw the clipped line in red
         glColor3f(1.0, 0.0, 0.0);
+        glLineWidth(3);
         glBegin(GL_LINES);
         glVertex2f(vx0, vy0);
         glVertex2f(vx1, vy1);
@@ -141,7 +150,7 @@ void display()
     glVertex2f(x_min, y_max);
     glEnd();
 
-    glColor3f(0.0, 0.0, 1.0);
+    glColor3f(211.0, 211.0, 211.0);
     glBegin(GL_LINES);
     glVertex2f(-20.0, 0.0);
     glVertex2f(20.0, 0.0);
@@ -149,10 +158,24 @@ void display()
     glVertex2f(0.0, 20.0);
     glEnd();
 
-    cohenSutherlandClip(-20, -10, 20, 10);
-    cohenSutherlandClip(-20, 10, 20, -10);
-    cohenSutherlandClip(-10, -20, 10, 20);
-    cohenSutherlandClip(10, -20, -10, 20);
+    // Test different lines with the clipping algorithm
+    cohenSutherlandClip(-15, -5, 15, 5);
+    cohenSutherlandClip(-15, 5, 15, -5);
+    cohenSutherlandClip(-5, -15, 5, 15);
+    cohenSutherlandClip(5, -15, -5, 15);
+
+    glColor3f(0.0, 0.0, 1.0);
+    glLineWidth(1);
+    glBegin(GL_LINES);
+    glVertex2f(-15, -5);
+    glVertex2f(15, 5);
+    glVertex2f(-15, 5);
+    glVertex2f(15, -5);
+    glVertex2f(-5, -15);
+    glVertex2f(5, 15);
+    glVertex2f(5, -15);
+    glVertex2f(-5, 15);
+    glEnd();
 
     glFlush();
 }
@@ -160,28 +183,12 @@ void display()
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
-    //Obtiene el tamaño de la pantalla
-    int screenWidth = glutGet(GLUT_SCREEN_WIDTH);
-    int screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
-
-    // Obtener el tamaño de la ventana
-    int windowSizeX = 500;
-    int windowSizeY = 500;
-    int windowWidth = glutGet(GLUT_WINDOW_WIDTH);
-    int windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
-
-    // Calcular la posición de la ventana para centrarla en la pantalla
-    int windowPosX = (screenWidth - windowWidth - windowSizeX) / 2;
-    int windowPosY = (screenHeight - windowHeight - windowSizeY) / 2;
-    //Inicializar el modo de despliegue
-    glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
-    glutInitWindowSize(windowSizeX, windowSizeY);
-    glutInitWindowPosition(windowPosX, windowPosY);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(0, 0);
     glutCreateWindow("Cohen-Sutherland Line Clipping Algorithm");
     gluOrtho2D(-20, 20, -20, 20);
     glutDisplayFunc(display);
     glutMainLoop();
     return 0;
 }
-
-
